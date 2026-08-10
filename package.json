@@ -1,8 +1,8 @@
 {
-  "name": "claude-commit-message",
+  "name": "claude-cli-commit-message",
   "displayName": "Claude Commit Message",
   "description": "Generate commit messages with the local Claude CLI straight from the Source Control input box",
-  "version": "0.4.1",
+  "version": "0.4.5",
   "publisher": "OKJI",
   "icon": "icon.png",
   "license": "MIT",
@@ -43,6 +43,11 @@
         "title": "Cancel Commit Message Generation",
         "category": "Claude Commit",
         "icon": "$(loading~spin)"
+      },
+      {
+        "command": "claudeCommit.enableButton",
+        "title": "Enable the Source Control Input Box Button",
+        "category": "Claude Commit"
       },
       {
         "command": "claudeCommit.installGitHook",

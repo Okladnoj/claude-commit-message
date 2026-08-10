@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import * as vscode from 'vscode';
+import { ButtonSetup } from './buttonSetup';
 import {
 	CLAUDE_NOT_FOUND,
 	GENERATION_CANCELLED,
@@ -26,17 +27,26 @@ import { Settings, readSettings } from './settings';
 let activeGeneration: vscode.CancellationTokenSource | undefined;
 
 export function activate(context: vscode.ExtensionContext): void {
+	const setup = new ButtonSetup(context);
+
 	context.subscriptions.push(
 		createOutput(),
-		vscode.commands.registerCommand('claudeCommit.generate', (sourceControl?: vscode.SourceControl) =>
-			generateCommitMessage(context.extensionPath, sourceControl),
-		),
+		setup,
+		vscode.commands.registerCommand('claudeCommit.generate', (sourceControl?: vscode.SourceControl) => {
+			if (sourceControl) {
+				setup.confirmWorking();
+			}
+
+			return generateCommitMessage(context.extensionPath, sourceControl);
+		}),
 		vscode.commands.registerCommand('claudeCommit.cancel', () => activeGeneration?.cancel()),
+		vscode.commands.registerCommand('claudeCommit.enableButton', () => setup.runExplicit()),
 		vscode.commands.registerCommand('claudeCommit.installGitHook', () => runInstallGitHook(context.extensionPath)),
 	);
 
 	void setBusy(false);
 	void verifyClaudeAvailable();
+	void setup.start();
 }
 
 export function deactivate(): void {

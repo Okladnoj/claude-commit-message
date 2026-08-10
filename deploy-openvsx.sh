@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Publishes the extension to Open VSX — the registry Cursor, Antigravity,
 # Windsurf and VSCodium install from.
-# Needs OVSX_PAT: an access token from https://open-vsx.org/user-settings/tokens.
+# Reads the token from OVSX_PAT or OPEN_VSX_TOKEN, otherwise asks for it.
 # Usage: ./deploy-openvsx.sh [path/to.vsix] [--yes]
 set -euo pipefail
 
@@ -32,8 +32,12 @@ ovsx() {
 	npx --yes ovsx "$@"
 }
 
-if [ -z "${OVSX_PAT:-}" ]; then
-	echo "OVSX_PAT is not set. Create a token at https://open-vsx.org/user-settings/tokens."
+OVSX_PAT="${OVSX_PAT:-${OPEN_VSX_TOKEN:-}}"
+
+if [ -z "$OVSX_PAT" ]; then
+	echo "Neither OVSX_PAT nor OPEN_VSX_TOKEN is set. Sign in with GitHub, then:"
+	echo "  https://open-vsx.org/user-settings/tokens -> Generate New Token"
+	echo "  The ${PUBLISHER} namespace already exists — no create-namespace needed"
 	read -r -s -p "OVSX_PAT: " OVSX_PAT || true
 	echo
 fi

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Publishes the extension to the Visual Studio Marketplace (VS Code).
-# Needs VSCE_PAT: an Azure DevOps token with Marketplace > Manage.
+# Uses the token stored by `vsce login <publisher>`; falls back to VSCE_PAT or
+# to a prompt when no publisher is logged in.
 # Usage: ./deploy-vscode.sh [path/to.vsix] [--yes]
 set -euo pipefail
 
@@ -31,13 +32,22 @@ vsce() {
 	npx --yes @vscode/vsce "$@"
 }
 
-if [ -z "${VSCE_PAT:-}" ]; then
-	echo "VSCE_PAT is not set. Create a token at https://dev.azure.com with the Marketplace > Manage scope."
+is_logged_in() {
+	vsce ls-publishers 2>/dev/null | grep -qx "$PUBLISHER"
+}
+
+if [ -z "${VSCE_PAT:-}" ] && ! is_logged_in; then
+	echo "${PUBLISHER} is not logged in and VSCE_PAT is not set."
+	echo "Token comes from Azure DevOps, not the Azure Portal:"
+	echo "  https://dev.azure.com -> User settings -> Personal access tokens -> New Token"
+	echo "  Organization: All accessible organizations, Scopes: Custom defined -> Marketplace -> Manage"
+	echo "  The publisher must already exist at https://marketplace.visualstudio.com/manage"
+	echo "  A one-off login keeps it in the keychain: vsce login ${PUBLISHER}"
 	read -r -s -p "VSCE_PAT: " VSCE_PAT || true
 	echo
 fi
 
-if [ -z "$VSCE_PAT" ]; then
+if [ -z "${VSCE_PAT:-}" ] && ! is_logged_in; then
 	echo "no token, cancelled" >&2
 	exit 1
 fi
@@ -68,7 +78,26 @@ if [ "$ASSUME_YES" -eq 0 ]; then
 	esac
 fi
 
-vsce publish --packagePath "$VSIX" --pat "$VSCE_PAT" --allow-proposed-apis contribSourceControlInputBoxMenu
+publish() {
+	if [ -n "${VSCE_PAT:-}" ]; then
+		vsce publish --packagePath "$VSIX" --pat "$VSCE_PAT" --allow-proposed-apis contribSourceControlInputBoxMenu
+		return
+	fi
+
+	vsce publish --packagePath "$VSIX" --allow-proposed-apis contribSourceControlInputBoxMenu
+}
+
+if ! publish; then
+	echo
+	echo "read the error above, the usual causes are:" >&2
+	echo "  expired token — issue a new one at https://dev.azure.com (User settings ->" >&2
+	echo "    Personal access tokens, All accessible organizations, Marketplace > Manage)," >&2
+	echo "    then store it with: vsce login ${PUBLISHER}" >&2
+	echo "  taken name — the 'name' field in package.json is unique across the whole" >&2
+	echo "    Marketplace, not just within the publisher" >&2
+	echo "  version already published — bump the version in package.json" >&2
+	exit 1
+fi
 
 echo
 echo "published: https://marketplace.visualstudio.com/items?itemName=${PUBLISHER}.${NAME}"

@@ -3,8 +3,22 @@
 Generate commit messages with the local Claude CLI, straight from the Source
 Control panel of VS Code or Cursor.
 
-Install it, and the sparkle button is in the Source Control input box. There is
-no setup. Generation is also available from the command palette via
+## One-time setup
+
+The button sits inside the Source Control input box. That menu is a VS Code
+proposed API, and the editor only grants it to extensions listed in
+`argv.json`. On the first run the extension offers to add itself there; it
+keeps a `.bak` copy of the file and leaves your comments untouched. The change
+takes effect after the editor is quit and started again — reloading the window
+is not enough.
+
+Until the setup is finished, a `Claude Commit` entry in the status bar says what
+is still missing — the `argv.json` change itself, or the restart that activates
+it. Clicking it, or running `Claude Commit: Enable the Source Control Input Box
+Button`, resumes the setup at any point, including after `Never ask again`. The
+entry goes away for good once the button is pressed and proves to work.
+
+Until then, generation still works from the command palette via
 `Claude Commit: Generate Commit Message`.
 
 ## How it works
@@ -70,13 +84,13 @@ carry a `Show Output` button.
 ## Install from a `.vsix`
 
 ```sh
-npm install
-npm run compile
-npx vsce package
-code --install-extension claude-commit-message-0.3.0.vsix
+./package.sh
+code --install-extension dist/claude-cli-commit-message-<version>.vsix
 ```
 
-Publishing requires `vsce publish --allow-all-proposed-apis`, because the
+`./deploy-vscode.sh` publishes to the Visual Studio Marketplace and
+`./deploy-openvsx.sh` to Open VSX, which is what Cursor, Antigravity, Windsurf
+and VSCodium install from. Both pass `--allow-proposed-apis`, because the
 manifest declares `enabledApiProposals`.
 
 In Cursor, use the `Extensions: Install from VSIX…` command.

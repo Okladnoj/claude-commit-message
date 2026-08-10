@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.4.5
+
+- Stop trusting the stored confirmation on its own. A press of the generate
+  command was taken as proof that the proposed API is granted, but the editor
+  also routes that command through the input box last-action mechanism, so the
+  extension could mark itself as set up while the button was never rendered —
+  and then stay silent forever. The confirmation now only counts while the
+  entry is actually present in `argv.json`.
+
+## 0.4.4
+
+- Make the unfinished setup impossible to miss: the status bar entry now carries
+  the warning colour and a warning icon, and says `restart to finish` while the
+  `argv.json` entry is in place but the editor has not been restarted yet.
+
+## 0.4.3
+
+- Bring the `argv.json` setup back. Dropping it in 0.4.0 was a mistake: the
+  button only kept working because the entry written by an earlier version was
+  still in effect in the running editor. Without it the input box menu is never
+  rendered — `scm/inputBox` stays a proposed API.
+
+## 0.4.2
+
+- Rename the extension to `claude-cli-commit-message`: the Marketplace keeps
+  extension names unique across every publisher, and `claude-commit-message`
+  was already taken. The identifier is now `OKJI.claude-cli-commit-message`.
+
 ## 0.4.1
 
 - Show the running bar in the Source Control view title, where the other
