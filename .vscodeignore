@@ -1,0 +1,14 @@
+.vscode/**
+.agents/**
+.git/**
+.gitignore
+node_modules/**
+out/**/*.map
+src/**
+tsconfig.json
+**/*.ts
+**/*.vsix
+dist/**
+package.sh
+deploy-vscode.sh
+deploy-openvsx.sh

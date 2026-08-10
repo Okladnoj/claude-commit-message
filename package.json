@@ -1,0 +1,116 @@
+{
+  "name": "claude-commit-message",
+  "displayName": "Claude Commit Message",
+  "description": "Generate commit messages with the local Claude CLI straight from the Source Control input box",
+  "version": "0.4.1",
+  "publisher": "OKJI",
+  "icon": "icon.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Okladnoj/claude-commit-message.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "enabledApiProposals": [
+    "contribSourceControlInputBoxMenu"
+  ],
+  "categories": [
+    "SCM Providers",
+    "Other"
+  ],
+  "keywords": [
+    "git",
+    "commit",
+    "claude",
+    "conventional commits"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "claudeCommit.generate",
+        "title": "Generate Commit Message",
+        "category": "Claude Commit",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "claudeCommit.cancel",
+        "title": "Cancel Commit Message Generation",
+        "category": "Claude Commit",
+        "icon": "$(loading~spin)"
+      },
+      {
+        "command": "claudeCommit.installGitHook",
+        "title": "Install prepare-commit-msg Hook (local only, lost on re-clone)",
+        "category": "Claude Commit"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "claudeCommit.cancel",
+          "when": "claudeCommit.busy"
+        }
+      ],
+      "scm/inputBox": [
+        {
+          "command": "claudeCommit.generate",
+          "when": "scmProvider == git && !claudeCommit.busy"
+        },
+        {
+          "command": "claudeCommit.cancel",
+          "when": "scmProvider == git && claudeCommit.busy"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Claude Commit Message",
+      "properties": {
+        "claudeCommit.claudePath": {
+          "type": "string",
+          "default": "claude",
+          "markdownDescription": "Path to the `claude` CLI. Use an absolute path when the CLI is not in the PATH of the editor process."
+        },
+        "claudeCommit.model": {
+          "type": "string",
+          "default": "sonnet",
+          "description": "Model passed to `claude -p`."
+        },
+        "claudeCommit.diffLimit": {
+          "type": "number",
+          "default": 60000,
+          "description": "Maximum diff size in characters sent to Claude."
+        },
+        "claudeCommit.timeoutSec": {
+          "type": "number",
+          "default": 90,
+          "description": "Timeout of a single generation call, in seconds."
+        },
+        "claudeCommit.recentCommits": {
+          "type": "number",
+          "default": 8,
+          "description": "How many recent commit subjects are sent as a style reference."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "./package.sh",
+    "deploy:vscode": "./deploy-vscode.sh",
+    "deploy:openvsx": "./deploy-openvsx.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.6.0"
+  },
+  "dependencies": {}
+}
