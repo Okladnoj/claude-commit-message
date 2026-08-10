@@ -31,7 +31,13 @@ pkill -P "$WATCHDOG_PID" 2>/dev/null
 kill "$WATCHDOG_PID" 2>/dev/null
 wait "$WATCHDOG_PID" 2>/dev/null
 
-[ "$STATUS" -eq 0 ] || exit "$STATUS"
+if [ "$STATUS" -ne 0 ]; then
+	# The CLI reports usage limits and auth failures on stdout, which is dropped
+	# on a failing exit — forward it so the caller can explain what happened.
+	cat "$OUT_FILE" >&2
+	exit "$STATUS"
+fi
+
 [ -s "$OUT_FILE" ] || exit 1
 
 cat "$OUT_FILE"

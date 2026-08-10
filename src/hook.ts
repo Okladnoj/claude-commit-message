@@ -14,7 +14,7 @@ export async function installGitHook(extensionPath: string, api: GitApi): Promis
 
 	const hooksDir = await resolveHooksDir(api.git.path, repository);
 	if (!hooksDir) {
-		vscode.window.showErrorMessage('Claude Commit Message: could not resolve the hooks directory');
+		vscode.window.showErrorMessage('Claude CLI Commit Message: could not resolve the hooks directory');
 		return;
 	}
 
@@ -28,13 +28,13 @@ export async function installGitHook(extensionPath: string, api: GitApi): Promis
 
 	log(`hook installed into ${hooksDir}`);
 	vscode.window.showInformationMessage(
-		`Claude Commit Message: hook installed into ${hooksDir}. It is local to this clone and is not versioned.`,
+		`Claude CLI Commit Message: hook installed into ${hooksDir}. It is local to this clone and is not versioned.`,
 	);
 }
 
 async function pickRepository(api: GitApi): Promise<GitRepository | undefined> {
 	if (api.repositories.length === 0) {
-		vscode.window.showErrorMessage('Claude Commit Message: no git repository is open');
+		vscode.window.showErrorMessage('Claude CLI Commit Message: no git repository is open');
 		return undefined;
 	}
 

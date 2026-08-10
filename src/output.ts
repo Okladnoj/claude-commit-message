@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 let channel: vscode.OutputChannel | undefined;
 
 export function createOutput(): vscode.OutputChannel {
-	channel = vscode.window.createOutputChannel('Claude Commit Message');
+	channel = vscode.window.createOutputChannel('Claude CLI Commit Message');
 	return channel;
 }
 

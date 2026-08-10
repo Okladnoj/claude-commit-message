@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.0
+
+- Say what actually went wrong instead of `Generation failed, see the output for
+  details`. A usage limit is now reported as
+  `Claude usage limit reached, resets at 22:50`, and any other failure shows the
+  first line the CLI printed — an expired login, a bad model name, a broken
+  path.
+- `gen-commit-msg.sh` forwards the CLI output on a failing exit. The limit
+  notice is written to stdout, which the script used to drop, so the reason
+  never reached the extension.
+
 ## 0.4.5
 
 - Stop trusting the stored confirmation on its own. A press of the generate
@@ -90,4 +101,4 @@
 - Falls back to the unstaged diff when nothing is staged, with a warning.
 - `prepare-commit-msg` hook and the `Claude Commit: Install prepare-commit-msg Hook` command for terminal and third-party git clients.
 - Settings: `claudePath`, `model`, `diffLimit`, `timeoutSec`, `recentCommits`.
-- Diagnostics in the `Claude Commit Message` output channel.
+- Diagnostics in the `Claude CLI Commit Message` output channel.

@@ -12,7 +12,7 @@ export class ButtonSetup implements vscode.Disposable {
 	constructor(context: vscode.ExtensionContext) {
 		this.context = context;
 		this.status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-		this.status.name = 'Claude Commit Message';
+		this.status.name = 'Claude CLI Commit Message';
 		this.status.command = 'claudeCommit.enableButton';
 	}
 
@@ -99,7 +99,7 @@ export class ButtonSetup implements vscode.Disposable {
 	private async offerSetup(explicit: boolean): Promise<void> {
 		const dismissLabel = explicit ? 'Not now' : 'Never ask again';
 		const answer = await vscode.window.showInformationMessage(
-			`Claude Commit Message puts its button inside the Source Control input box. ${vscode.env.appName} allows that only for extensions listed in argv.json. Add it there?`,
+			`Claude CLI Commit Message puts its button inside the Source Control input box. ${vscode.env.appName} allows that only for extensions listed in argv.json. Add it there?`,
 			'Add and restart',
 			'Open argv.json',
 			dismissLabel,
@@ -124,7 +124,7 @@ export class ButtonSetup implements vscode.Disposable {
 
 	private async offerRestart(): Promise<void> {
 		const answer = await vscode.window.showInformationMessage(
-			`Claude Commit Message is already listed in ${argvPath()}. If the button is still missing, quit ${vscode.env.appName} completely and start it again — reloading the window is not enough.`,
+			`Claude CLI Commit Message is already listed in ${argvPath()}. If the button is still missing, quit ${vscode.env.appName} completely and start it again — reloading the window is not enough.`,
 			'Quit now',
 			'Open argv.json',
 			'Stop reminding',
@@ -159,7 +159,7 @@ export class ButtonSetup implements vscode.Disposable {
 		this.refreshStatus();
 
 		const answer = await vscode.window.showInformationMessage(
-			`Claude Commit Message: ${argvPath()} updated. Quit ${vscode.env.appName} and start it again — reloading the window is not enough.`,
+			`Claude CLI Commit Message: ${argvPath()} updated. Quit ${vscode.env.appName} and start it again — reloading the window is not enough.`,
 			{ modal: true },
 			'Quit now',
 		);
@@ -183,7 +183,7 @@ export class ButtonSetup implements vscode.Disposable {
 
 		vscode.window
 			.showErrorMessage(
-				`Claude Commit Message: could not update argv.json (${reason}). Add "enable-proposed-api": ["${EXTENSION_ID}"] manually.`,
+				`Claude CLI Commit Message: could not update argv.json (${reason}). Add "enable-proposed-api": ["${EXTENSION_ID}"] manually.`,
 				'Open argv.json',
 			)
 			.then((action) => {

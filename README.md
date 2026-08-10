@@ -1,4 +1,4 @@
-# Claude Commit Message
+# Claude CLI Commit Message
 
 Generate commit messages with the local Claude CLI, straight from the Source
 Control panel of VS Code or Cursor.
@@ -77,7 +77,7 @@ pressing the button is not the flow either of them is designed for.
 
 ## Diagnostics
 
-Everything the extension does is logged to the `Claude Commit Message` output
+Everything the extension does is logged to the `Claude CLI Commit Message` output
 channel: prompt size, exit codes, the stderr of the CLI. Error notifications
 carry a `Show Output` button.
 

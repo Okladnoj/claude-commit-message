@@ -6,6 +6,7 @@ import {
 	GENERATION_CANCELLED,
 	GENERATION_TIMED_OUT,
 	GeneratorError,
+	LIMIT_REACHED,
 	runGenerator,
 } from './generator';
 import {
@@ -55,7 +56,7 @@ export function deactivate(): void {
 
 async function generateCommitMessage(extensionPath: string, sourceControl?: vscode.SourceControl): Promise<void> {
 	if (activeGeneration) {
-		vscode.window.showWarningMessage('Claude Commit Message: a generation is already running');
+		vscode.window.showWarningMessage('Claude CLI Commit Message: a generation is already running');
 		return;
 	}
 
@@ -74,7 +75,7 @@ async function generateCommitMessage(extensionPath: string, sourceControl?: vsco
 	const settings = readSettings();
 	const changes = await collectChanges(api, repository, settings.diffLimit);
 	if (!changes) {
-		vscode.window.showWarningMessage('Claude Commit Message: no changes to describe');
+		vscode.window.showWarningMessage('Claude CLI Commit Message: no changes to describe');
 		return;
 	}
 
@@ -97,7 +98,7 @@ function warnAboutSource(source: ChangeSource): void {
 	const described = source === 'unstaged' ? 'unstaged changes' : 'new untracked files';
 
 	vscode.window.showWarningMessage(
-		`Claude Commit Message: nothing is staged, the message describes ${described}`,
+		`Claude CLI Commit Message: nothing is staged, the message describes ${described}`,
 	);
 }
 
@@ -211,12 +212,27 @@ function reportGeneratorError(error: unknown, settings: Settings): void {
 		return;
 	}
 
-	reportFailure('Generation failed, see the output for details');
+	if (generatorError?.code === LIMIT_REACHED) {
+		reportFailure(describeLimitFailure(generatorError));
+		return;
+	}
+
+	reportFailure(generatorError ? generatorError.message : 'Generation failed, see the output for details');
+}
+
+function describeLimitFailure(error: GeneratorError): string {
+	if (!error.resetsAt) {
+		return 'Claude usage limit reached, try again later';
+	}
+
+	const resets = error.resetsAt.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+
+	return `Claude usage limit reached, resets at ${resets}`;
 }
 
 function reportFailure(message: string): void {
 	log(message);
-	vscode.window.showErrorMessage(`Claude Commit Message: ${message}`, 'Show Output').then((action) => {
+	vscode.window.showErrorMessage(`Claude CLI Commit Message: ${message}`, 'Show Output').then((action) => {
 		if (action !== 'Show Output') {
 			return;
 		}
